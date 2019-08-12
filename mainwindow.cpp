@@ -52,7 +52,6 @@ void MainWindow::on_getReposBTN_clicked()
     QNetworkRequest request((QUrl(reposURL)));
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
-
     QNetworkReply *reply = manager.get(request);
 
     ui->console->append("Sending request...");
@@ -60,7 +59,6 @@ void MainWindow::on_getReposBTN_clicked()
     while (!reply->isFinished()) {
         qApp->processEvents();
     }
-
 
     QByteArray response_data = reply->readAll();
     QJsonDocument repos = QJsonDocument::fromJson(response_data);
@@ -89,7 +87,6 @@ void MainWindow::on_getReposBTN_clicked()
     ui->downloadSelectedBTN->setEnabled(true);
     ui->allCheck->setCheckState(Qt::Checked);
     ui->console->append("Data Loaded.");
-
 }
 
 void MainWindow::on_actionAbout_triggered()
@@ -111,8 +108,6 @@ void MainWindow::on_allCheck_stateChanged(int status)
             ui->repoTable->item(row, 0)->setCheckState(Qt::Unchecked);
         }
     }
-
-
 }
 
 
@@ -124,10 +119,25 @@ void MainWindow::cloneRepo(const QString repoURL)
     QProcess *cloneProcess = new QProcess(gitShell);
     cloneProcess->setProcessChannelMode(QProcess::MergedChannels);
     cloneProcess->execute("git", arguments);
-
 }
 
+void MainWindow::on_downloadSelectedBTN_clicked()
+{
+    downloadPath = ui->inDownloadPath->text();
+    for (int row = 0; row < ui->repoTable->rowCount(); row++) {
+        if (ui->repoTable->item(row, 0)->checkState() == Qt::Checked) {
+            const QString repoURL = ui->repoTable->item(row, 1)->text();
+            const QString repoName = ui->repoTable->item(row, 0)->text();
+            QString command;
+            command = "git clone " + repoURL + " " + downloadPath  + "/" + repoName;
 
+            ui->console->append("Cloning: " + repoName);
+
+            QProcess *cloneProcess = new QProcess(gitShell);
+            cloneProcess->start(command);
+        }
+    }
+}
 
 void MainWindow::on_dirChoserBTN_clicked()
 {
