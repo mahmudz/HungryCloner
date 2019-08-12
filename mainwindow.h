@@ -3,7 +3,7 @@
 
 #include <QMainWindow>
 #include <QNetworkAccessManager>
-#include <QNetworkRequest>
+#include <QtNetwork>
 
 namespace Ui {
 class MainWindow;
@@ -18,14 +18,27 @@ public:
     ~MainWindow();
 
 private slots:
+
     void on_inName_textChanged(const QString &arg1);
 
     void on_getReposBTN_clicked();
 
+    void on_actionAbout_triggered();
+
+    void on_allCheck_stateChanged(int arg1);
+
+    void on_downloadSelectedBTN_clicked();
+
+    void on_dirChoserBTN_clicked();
+
 private:
     Ui::MainWindow *ui;
-    QNetworkAccessManager *manager;
-    QNetworkRequest request;
+    QNetworkAccessManager manager;
+    QJsonArray repoArray;
+    QPrivateSignal shellStatusPrint(const QString &arg1);
+    QObject *gitShell = 0;
+    QString downloadPath = QDir::currentPath();
+    void cloneRepo(const QString repoURL);
 };
 
 #endif // MAINWINDOW_H
