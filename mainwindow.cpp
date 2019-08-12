@@ -115,6 +115,20 @@ void MainWindow::on_allCheck_stateChanged(int status)
 
 }
 
+
+void MainWindow::cloneRepo(const QString repoURL)
+{
+    QStringList arguments;
+    arguments << "clone " + repoURL;
+
+    QProcess *cloneProcess = new QProcess(gitShell);
+    cloneProcess->setProcessChannelMode(QProcess::MergedChannels);
+    cloneProcess->execute("git", arguments);
+
+}
+
+
+
 void MainWindow::on_dirChoserBTN_clicked()
 {
     QFileDialog dialog(this);
