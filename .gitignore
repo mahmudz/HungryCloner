@@ -17,4 +17,12 @@
 # Qt Creator backups
 *.autosave
 
-# End of https://www.gitignore.io/api/qtcreator
+# Ignore build directory
+/build
+/debug
+/release
+
+# Ignore build files
+Makefile
+Makefile.*
+.qmake.stash
