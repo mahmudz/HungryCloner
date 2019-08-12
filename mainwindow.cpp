@@ -92,3 +92,18 @@ void MainWindow::on_actionAbout_triggered()
 }
 
 
+void MainWindow::on_allCheck_stateChanged(int status)
+{
+    if (status == 2) {
+        for (int row = 0; row < ui->repoTable->rowCount(); row++) {
+            ui->repoTable->item(row, 0)->setCheckState(Qt::Checked);
+        }
+    }else {
+        for (int row = 0; row < ui->repoTable->rowCount(); row++) {
+            ui->repoTable->item(row, 0)->setCheckState(Qt::Unchecked);
+        }
+    }
+
+
+}
+
