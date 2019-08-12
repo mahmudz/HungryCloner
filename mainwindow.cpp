@@ -5,6 +5,7 @@
 #include <QNetworkReply>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QFileDialog>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -14,12 +15,17 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->getReposBTN->setEnabled(false);
     ui->downloadSelectedBTN->setEnabled(false);
     ui->allCheck->setEnabled(false);
+
+    ui->inDownloadPath->setText(downloadPath);
+
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
 }
+
+void shellStatusPrint(QString &msg);
 
 void MainWindow::on_inName_textChanged(const QString &data)
 {
@@ -61,11 +67,12 @@ void MainWindow::on_getReposBTN_clicked()
 
     reply->close();
     repoArray = repos.array();
-
+    ui->repoTable->setRowCount(0);
     for(const QJsonValue& val: repoArray) {
         QJsonObject loopObj = val.toObject();
 
         QString repoName = loopObj["name"].toString();
+        QString gitURL = loopObj["clone_url"].toString();
 
         QTableWidgetItem *repoNameItem = new QTableWidgetItem();
         repoNameItem->setCheckState(Qt::Checked);
@@ -75,6 +82,7 @@ void MainWindow::on_getReposBTN_clicked()
         ui->repoTable->insertRow(rowCount);
 
         ui->repoTable->setItem(rowCount, 0, repoNameItem);
+        ui->repoTable->setItem(rowCount, 1, new QTableWidgetItem(gitURL));
 
     }
     ui->allCheck->setEnabled(true);
@@ -107,3 +115,11 @@ void MainWindow::on_allCheck_stateChanged(int status)
 
 }
 
+void MainWindow::on_dirChoserBTN_clicked()
+{
+    QFileDialog dialog(this);
+    dialog.setDirectory(downloadPath);
+    dialog.setFileMode(QFileDialog::DirectoryOnly);
+    dialog.exec();
+    ui->inDownloadPath->setText(dialog.directoryUrl().path().remove(0,1));
+}
