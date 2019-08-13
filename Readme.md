@@ -11,5 +11,5 @@ HungryCloner is a simple GUI application written in C++ with QT Framework. This 
 - [x] Download and Store
 
 # Screenshots
-![](./screenshots/initialGUI.png)
-> Initial GUI Design
+![](./screenshots/preview.webp)
+> Working Preview
