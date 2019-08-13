@@ -35,8 +35,7 @@ private:
     Ui::MainWindow *ui;
     QNetworkAccessManager manager;
     QJsonArray repoArray;
-    QPrivateSignal shellStatusPrint(const QString &arg1);
-    QObject *gitShell = 0;
+    QObject *gitShell = nullptr;
     QString downloadPath = QDir::currentPath();
     void cloneRepo(const QString repoURL);
 };
