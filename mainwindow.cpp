@@ -25,7 +25,6 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void shellStatusPrint(QString &msg);
 
 void MainWindow::on_inName_textChanged(const QString &data)
 {
@@ -63,7 +62,7 @@ void MainWindow::on_getReposBTN_clicked()
     QByteArray response_data = reply->readAll();
     QJsonDocument repos = QJsonDocument::fromJson(response_data);
 
-    reply->close();
+    reply->deleteLater();
     repoArray = repos.array();
     ui->repoTable->setRowCount(0);
     for(const QJsonValue& val: repoArray) {
@@ -111,16 +110,6 @@ void MainWindow::on_allCheck_stateChanged(int status)
 }
 
 
-void MainWindow::cloneRepo(const QString repoURL)
-{
-    QStringList arguments;
-    arguments << "clone " + repoURL;
-
-    QProcess *cloneProcess = new QProcess(gitShell);
-    cloneProcess->setProcessChannelMode(QProcess::MergedChannels);
-    cloneProcess->execute("git", arguments);
-}
-
 void MainWindow::on_downloadSelectedBTN_clicked()
 {
     downloadPath = ui->inDownloadPath->text();
@@ -131,10 +120,20 @@ void MainWindow::on_downloadSelectedBTN_clicked()
             QString command;
             command = "git clone " + repoURL + " " + downloadPath  + "/" + repoName;
 
-            ui->console->append("Cloning: " + repoName);
-
             QProcess *cloneProcess = new QProcess(gitShell);
+            cloneProcess->setProcessChannelMode(QProcess::MergedChannels);
             cloneProcess->start(command);
+
+            QObject::connect(cloneProcess, &QProcess::readyRead, [cloneProcess, this] () {
+                QByteArray a = cloneProcess->readAll();
+                ui->console->append(a);
+            });
+            QObject::connect(cloneProcess, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
+                             [=](int exitCode, QProcess::ExitStatus){
+
+                cloneProcess->deleteLater();
+            });
+
         }
     }
 }
